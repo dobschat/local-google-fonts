@@ -61,7 +61,7 @@ class LGF {
 				if ( ! isset( $url['href'] ) ) {
 					continue;
 				}
-				if ( preg_match( '/\/\/fonts\.(gstatic|googleapis)\.com/', $url['href'] ) ) {
+				if ( preg_match( '/\/\/fonts\.(gstatic|googleapis|bunny)\.(com|net)/', $url['href'] ) ) {
 					unset( $urls[ $key ] );
 				}
 			}
@@ -168,6 +168,19 @@ class LGF {
 				}
 			}
 		}
+		if ( false !== strpos( $content, '//fonts.bunny.net/css' ) ) {
+
+			$regex = "/\b(?:(?:https?):\/\/fonts\.bunny\.net\/css)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
+
+			if ( $urls = preg_match_all( $regex, $content, $matches ) ) {
+				foreach ( $matches[0] as $i => $url ) {
+					$local_url = $this->google_to_local_url( $url );
+					if ( $local_url != $url ) {
+						$content = str_replace( $url, $local_url, $content );
+					}
+				}
+			}
+		}
 
 		return $content;
 	}
@@ -228,6 +241,9 @@ class LGF {
 		if ( false !== strpos( $src, '//fonts.googleapis.com/css' ) ) {
 			$src = $this->google_to_local_url( $src, $handle );
 		}
+		if ( false !== strpos( $src, '//fonts.bunny.net/css' ) ) {
+			$src = $this->google_to_local_url( $src, $handle );
+		}
 		return $src;
 	}
 
@@ -267,9 +283,9 @@ class LGF {
 			return;
 		}
 		?>
-	<div class="notice notice-info">
-		<p><?php printf( esc_html__( 'Thanks for using Local Google Fonts. Please check the %s.', 'local-google-fonts' ), '<a href="' . admin_url( 'options-general.php?page=lgf-settings' ) . '">' . esc_html__( 'settings page', 'local-google-fonts' ) . '</a>' ); ?></p>
-	</div>
+		<div class="notice notice-info">
+			<p><?php printf( esc_html__( 'Thanks for using Local Google Fonts. Please check the %s.', 'local-google-fonts' ), '<a href="' . admin_url( 'options-general.php?page=lgf-settings' ) . '">' . esc_html__( 'settings page', 'local-google-fonts' ) . '</a>' ); ?></p>
+		</div>
 		<?php
 	}
 
